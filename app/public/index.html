@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      #user-data {
+        margin-top: 10px;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="form" style="position: relative">
+      <div class="test"></div>
+      <div id="user-data"></div>
+    </main>
+
+    <script src="https://trubr.com/cdn/widget.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      const origin = location.origin;
+      const form = document.getElementById('form');
+      const userData = document.getElementById('user-data');
+
+      const decryptMessage = (encryptedData, responseCallback) => {
+        const decryptRequest = {
+          contentType: 'application/json',
+          url: origin + "/api/decrypt",
+          method: 'POST',
+          data: JSON.stringify({ data: encryptedData })
+        };
+
+        $.ajax(decryptRequest).done(responseCallback);
+      };
+
+      const options = {
+        success: (event) => {
+          const responseData = event.citizenData.data;
+          decryptMessage(responseData.data, (response) => {
+            userData.textContent = response;
+          });
+        },
+        cancel: (event) => { console.log('cancel: ', event) },
+        error: (event) => { console.log('error: ', event) },
+        close: () => { console.log('Window closed!') },
+        apiKey: '6293691c-f177-4b31-8342-048d01496bae'
+      };
+
+      const loginButton = new Widget().createAuthenticateButton(options);
+      form.insertBefore(loginButton, userData);
+    </script>
+  </body>
+</html>
